@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__, template_folder='templates')
+# Use absolute pathing for Vercel Serverless compatibility
+template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
+app = Flask(__name__, template_folder=template_dir)
 
 # Configuration
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
