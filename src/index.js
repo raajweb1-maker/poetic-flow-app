@@ -44,7 +44,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
         .moving-orb {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.15);
             filter: blur(80px);
             pointer-events: none;
         }
