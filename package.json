@@ -1,0 +1,11 @@
+{
+  "name": "poetic-flow-app",
+  "version": "1.0.0",
+  "description": "Minimalist PoeticFlow application on Cloudflare Pages",
+  "scripts": {
+    "build": "echo 'No build step required'"
+  },
+  "devDependencies": {
+    "wrangler": "^3.45.0"
+  }
+}
