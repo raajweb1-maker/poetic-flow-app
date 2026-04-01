@@ -140,9 +140,9 @@ const HTML_CONTENT = `<!DOCTYPE html>
                     const text = await res.text();
                     try {
                         const errorData = JSON.parse(text);
-                        throw new Error(errorData.error || \`Server responded with \${res.status}\`);
+                        throw new Error(errorData.error || `Server responded with ${res.status}`);
                     } catch (e) {
-                         throw new Error(\`Cloudflare Error \${res.status}: \${text || 'Empty response'}\`);
+                         throw new Error(`Cloudflare Error ${res.status}: ${text || 'Empty response'}`);
                     }
                 }
 
@@ -176,7 +176,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
         }
     </script>
 </body>
-</html>\`;
+</html>`;
 
 export default {
   async fetch(request, env, ctx) {
@@ -225,7 +225,7 @@ export default {
         let baseUrl = env.LLM_BASE_URL || defaultBaseUrl;
         baseUrl = baseUrl.replace(/\/$/, "");
 
-        const prompt = \`Given the following user sentence, perform two tasks:
+        const prompt = `Given the following user sentence, perform two tasks:
 1. Write a short, creative poem (2-3 lines) inspired by the sentence.
 2. Provide a relevant, famous inspirational quote that matches the theme of the sentence.
 
@@ -236,7 +236,7 @@ POEM:
 QUOTE:
 "<quote text>" - <author>
 
-User sentence: "\${sentence}"\`;
+User sentence: "${sentence}"`;
 
         const payload = {
           model: modelParams,
@@ -248,10 +248,10 @@ User sentence: "\${sentence}"\`;
           max_tokens: 250
         };
 
-        const llmResponse = await fetch(\`\${baseUrl}/chat/completions\`, {
+        const llmResponse = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
           headers: {
-            "Authorization": \`Bearer \${apiKey}\`,
+            "Authorization": `Bearer ${apiKey}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify(payload)
@@ -259,7 +259,7 @@ User sentence: "\${sentence}"\`;
 
         if (!llmResponse.ok) {
           const errorText = await llmResponse.text();
-          throw new Error(\`LLM API Error \${llmResponse.status}: \${errorText}\`);
+          throw new Error(`LLM API Error ${llmResponse.status}: ${errorText}`);
         }
 
         const respData = await llmResponse.json();
@@ -268,7 +268,7 @@ User sentence: "\${sentence}"\`;
         let poemLines = [];
         let quoteParts = [];
 
-        const lines = content.trim().split('\\n');
+        const lines = content.trim().split('\n');
         let parsingPoem = false;
         let parsingQuote = false;
 
@@ -293,7 +293,7 @@ User sentence: "\${sentence}"\`;
           }
         }
 
-        let poemOutput = poemLines.map(l => l.trim()).filter(l => l).join("\\n");
+        let poemOutput = poemLines.map(l => l.trim()).filter(l => l).join("\n");
         let quoteOutput = quoteParts.map(p => p.trim()).filter(p => p).join(" ");
 
         if (!poemOutput && !quoteOutput) {
