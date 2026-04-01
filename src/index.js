@@ -40,99 +40,71 @@ const HTML_CONTENT = `<!DOCTYPE html>
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Ambient White Orbs */
+        /* Ambient White Orbs - Mouse Driven */
         .moving-orb {
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.15);
             filter: blur(80px);
             pointer-events: none;
+            transform: translate(-50%, -50%);
+            will-change: top, left;
         }
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            top: -10%;
-            left: -10%;
-            animation: float1 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .orb-2 {
-            width: 500px;
-            height: 500px;
-            top: 40%;
-            right: -15%;
-            animation: float2 30s infinite alternate-reverse cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .orb-3 {
-            width: 350px;
-            height: 350px;
-            bottom: -20%;
-            left: 20%;
-            animation: float3 28s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes float1 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30vw, 20vh) scale(1.1); }
-            100% { transform: translate(10vw, 50vh) scale(0.9); }
-        }
-        @keyframes float2 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-40vw, -10vh) scale(1.2); }
-            100% { transform: translate(-20vw, -40vh) scale(0.8); }
-        }
-        @keyframes float3 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(20vw, -30vh) scale(1.3); }
-            100% { transform: translate(40vw, -10vh) scale(1); }
-        }
+        .orb-1 { width: 400px; height: 400px; }
+        .orb-2 { width: 280px; height: 280px; background: rgba(255, 255, 255, 0.1); }
+        .orb-3 { width: 200px; height: 200px; background: rgba(255, 255, 255, 0.07); }
 
-        /* Subtle Instagram Link Effects */
+        /* Smooth Instagram Link Effects */
         .karmacharya-link {
             font-size: 1.05rem;
             letter-spacing: 0.08em;
             text-transform: lowercase;
-            color: #94a3b8;
-            transition: all 0.4s ease;
             text-decoration: none;
             position: relative;
-            padding: 0.3rem 0;
+            padding: 0.3rem 0.1rem;
             display: inline-block;
+            transform: translateY(0);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .karmacharya-link i {
             font-style: italic;
-            background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+            background: linear-gradient(90deg, #64748b, #94a3b8, #64748b);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            background-size: 200% auto;
-            transition: all 0.5s ease;
+            background-size: 250% auto;
+            transition: background 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        letter-spacing 0.5s ease;
+            letter-spacing: 0.08em;
         }
         .karmacharya-link:hover i {
-            background: linear-gradient(90deg, #3b82f6, #a855f7, #3b82f6);
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #e879f9, #60a5fa);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            animation: shine 2.5s linear infinite;
+            background-size: 250% auto;
+            animation: shine 3s ease infinite;
+            letter-spacing: 0.15em;
         }
         @keyframes shine {
-            to { background-position: 200% center; }
+            0% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+            100% { background-position: 0% center; }
         }
-        .karmacharya-link::before {
+        .karmacharya-link::after {
             content: '';
             position: absolute;
-            width: 100%;
-            height: 1px;
-            bottom: 0;
-            left: 0;
-            background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
-            transform: scaleX(0);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            inset: 0;
+            border-radius: 4px;
+            opacity: 0;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+            transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .karmacharya-link:hover::before {
-            transform: scaleX(1);
+        .karmacharya-link:hover::after {
+            opacity: 1;
         }
         .karmacharya-link:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
     </style>
 </head>
@@ -209,6 +181,31 @@ const HTML_CONTENT = `<!DOCTYPE html>
 
     <!-- Script Logic -->
     <script>
+        // === Mouse-Following Orbs ===
+        const orbs = [
+            { el: document.querySelector('.orb-1'), x: window.innerWidth / 2, y: window.innerHeight / 2, lag: 0.04 },
+            { el: document.querySelector('.orb-2'), x: window.innerWidth / 2, y: window.innerHeight / 2, lag: 0.07 },
+            { el: document.querySelector('.orb-3'), x: window.innerWidth / 2, y: window.innerHeight / 2, lag: 0.12 },
+        ];
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateOrbs() {
+            orbs.forEach(orb => {
+                orb.x += (mouseX - orb.x) * orb.lag;
+                orb.y += (mouseY - orb.y) * orb.lag;
+                orb.el.style.left = orb.x + 'px';
+                orb.el.style.top = orb.y + 'px';
+            });
+            requestAnimationFrame(animateOrbs);
+        }
+        animateOrbs();
+
         const btn = document.getElementById('poetizeBtn');
         const input = document.getElementById('sentenceInput');
         const loading = document.getElementById('loading');
