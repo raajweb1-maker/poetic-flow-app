@@ -9,16 +9,16 @@ const HTML_CONTENT = `<!DOCTYPE html>
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
-            color: #334155;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #f8fafc;
             min-height: 100vh;
         }
         .glass-panel {
-            background: rgba(255, 255, 255, 0.65);
+            background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
         .loading-dots span {
             animation: bounce 1.4s infinite ease-in-out both;
@@ -40,113 +40,115 @@ const HTML_CONTENT = `<!DOCTYPE html>
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Unique Instagram Link Effects */
-        .insta-link {
+        /* Subtle Instagram Link Effects */
+        .karmacharya-link {
+            font-size: 1.05rem;
+            letter-spacing: 0.08em;
+            text-transform: lowercase;
+            color: #94a3b8;
+            transition: all 0.4s ease;
+            text-decoration: none;
             position: relative;
+            padding: 0.3rem 0;
             display: inline-block;
-            font-weight: 500;
-            color: #d946ef;
-            transition: all 0.3s ease;
         }
-        .insta-text {
-            background: linear-gradient(to right, #f59e0b, #ec4899, #8b5cf6);
+        .karmacharya-link i {
+            font-style: italic;
+            background: linear-gradient(90deg, #94a3b8, #cbd5e1);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            font-size: 1.05rem;
-            transition: all 0.4s ease;
             background-size: 200% auto;
-            animation: shine 3s linear infinite;
+            transition: all 0.5s ease;
+        }
+        .karmacharya-link:hover i {
+            background: linear-gradient(90deg, #3b82f6, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 2.5s linear infinite;
         }
         @keyframes shine {
             to { background-position: 200% center; }
         }
-        .insta-link::after {
+        .karmacharya-link::before {
             content: '';
             position: absolute;
             width: 100%;
-            transform: scaleX(0);
-            height: 2px;
+            height: 1px;
             bottom: 0;
             left: 0;
-            background: linear-gradient(to right, #f59e0b, #ec4899);
-            transform-origin: bottom right;
-            transition: transform 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+            background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+            transform: scaleX(0);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .insta-link:hover::after {
+        .karmacharya-link:hover::before {
             transform: scaleX(1);
-            transform-origin: bottom left;
         }
-        .insta-link:hover {
+        .karmacharya-link:hover {
             transform: translateY(-2px);
-            text-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
         }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center p-4">
 
     <!-- Main Container -->
-    <div class="glass-panel w-full max-w-lg rounded-3xl p-8 mb-8 mt-4 transition-transform duration-500 hover:scale-[1.02] relative overflow-hidden z-10">
-        
-        <!-- Decorative subtle glowing bubbles -->
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-60"></div>
-        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+    <div class="glass-panel w-full max-w-lg rounded-3xl p-8 mb-6 mt-4 transition-transform duration-500 hover:scale-[1.01] relative overflow-hidden z-10">
 
         <div class="text-center mb-8 relative z-10">
-            <h1 class="text-5xl font-bold mb-3 tracking-tight text-slate-800">PoeticFlow</h1>
-            <p class="text-slate-600 font-medium text-sm tracking-wide uppercase">Transform your thoughts into art.</p>
+            <h1 class="text-5xl font-bold mb-3 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">PoeticFlow</h1>
+            <p class="text-slate-400 font-light text-sm tracking-wide uppercase">Transform your thoughts into art.</p>
         </div>
 
         <div class="mb-6 relative z-10">
             <div class="relative group">
-                <textarea id="sentenceInput" rows="3" class="w-full px-5 py-4 rounded-2xl border border-white/50 focus:outline-none focus:ring-4 focus:ring-orange-300/50 focus:border-orange-400 resize-none bg-white/40 text-slate-800 placeholder-slate-500 transition-all duration-300 shadow-sm group-hover:border-orange-300/80" placeholder="Type a gentle thought to inspire..."></textarea>
+                <textarea id="sentenceInput" rows="3" class="w-full px-5 py-4 rounded-2xl border border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 resize-none bg-slate-800/40 text-slate-200 placeholder-slate-500 transition-all duration-300 shadow-inner group-hover:border-indigo-500/30" placeholder="Type a sentence to inspire..."></textarea>
             </div>
             
-            <button id="poetizeBtn" class="w-full mt-4 bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 text-white font-semibold py-3.5 px-4 rounded-2xl shadow-xl hover:shadow-orange-500/30 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center gap-2 group border border-white/20">
+            <button id="poetizeBtn" class="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium py-3.5 px-4 rounded-2xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center gap-2 group">
                 <span class="text-lg">Poetize</span>
-                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg class="w-5 h-5 opacity-80 group-hover:translate-x-1 group-hover:opacity-100 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             </button>
         </div>
 
         <!-- Loading Indicator -->
-        <div id="loading" class="hidden flex justify-center items-center my-10 space-x-2 text-rose-500 loading-dots">
-            <span class="w-3 h-3 bg-rose-400 rounded-full"></span>
-            <span class="w-3 h-3 bg-rose-400 rounded-full"></span>
-            <span class="w-3 h-3 bg-rose-400 rounded-full"></span>
+        <div id="loading" class="hidden flex justify-center items-center my-10 space-x-2 text-indigo-400 loading-dots">
+            <span class="w-3 h-3 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></span>
+            <span class="w-3 h-3 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></span>
+            <span class="w-3 h-3 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></span>
         </div>
 
         <!-- Results Section -->
         <div id="resultSection" class="hidden space-y-6 flex-col mt-4 opacity-0 z-10 relative">
             <!-- Poem Section -->
-            <div class="bg-white/50 p-6 rounded-2xl border border-white/60 relative overflow-hidden group hover:border-pink-300 transition-colors shadow-sm">
-                <div class="absolute -right-2 -top-6 text-8xl text-rose-400 opacity-10 group-hover:opacity-20 transition-opacity rotate-12 serif font-serif">"</div>
-                <h3 class="text-xs font-bold text-rose-500 mb-3 uppercase tracking-widest flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 relative overflow-hidden group hover:border-indigo-500/40 transition-colors">
+                <div class="absolute -right-2 -top-6 text-8xl text-indigo-500 opacity-[0.03] group-hover:opacity-10 transition-opacity rotate-12 serif font-serif">"</div>
+                <h3 class="text-xs font-semibold text-indigo-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     Your Poem
                 </h3>
-                <p id="poemOutput" class="text-xl italic leading-relaxed text-slate-700 whitespace-pre-line relative z-10 font-medium"></p>
+                <p id="poemOutput" class="text-xl italic leading-relaxed text-slate-300 whitespace-pre-line relative z-10 font-light"></p>
             </div>
             
             <!-- Quote Section -->
-            <div class="bg-white/50 p-6 rounded-2xl border border-white/60 relative overflow-hidden group hover:border-amber-300 transition-colors shadow-sm">
-                <div class="absolute -right-4 -top-4 text-7xl opacity-10 group-hover:opacity-20 transition-opacity">💡</div>
-                <h3 class="text-xs font-bold text-amber-600 mb-3 uppercase tracking-widest flex items-center gap-2">
+            <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 relative overflow-hidden group hover:border-blue-400/40 transition-colors">
+                <div class="absolute -right-4 -top-4 text-7xl opacity-[0.03] group-hover:opacity-10 transition-opacity">💡</div>
+                <h3 class="text-xs font-semibold text-blue-400 mb-3 uppercase tracking-widest flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
                     Inspiration
                 </h3>
-                <p id="quoteOutput" class="text-md font-medium text-slate-700 relative z-10 box-decoration-clone"></p>
+                <p id="quoteOutput" class="text-md font-light text-slate-300 relative z-10 box-decoration-clone"></p>
             </div>
         </div>
         
         <!-- Error Container -->
-        <div id="errorSection" class="hidden mt-6 bg-red-100/80 border border-red-200 text-red-600 p-4 rounded-xl text-sm text-center font-semibold"></div>
+        <div id="errorSection" class="hidden mt-6 bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm text-center font-medium"></div>
     </div>
 
     <!-- Instagram Footer -->
-    <div class="mt-4 text-slate-700/80 font-medium tracking-wide z-10 text-sm">
-        Crafted with warmth by 
-        <a href="https://www.instagram.com/karmacharya32/" target="_blank" rel="noopener noreferrer" class="insta-link ml-1">
-            <i class="insta-text">Karmacharya</i>
+    <div class="mt-2 z-10">
+        <a href="https://www.instagram.com/karmacharya32/" target="_blank" rel="noopener noreferrer" class="karmacharya-link">
+            <i>karmacharya</i>
         </a>
     </div>
 
@@ -163,7 +165,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
         btn.addEventListener('click', async () => {
             const sentence = input.value.trim();
             if (!sentence) {
-                showError("Please enter a gentle thought to inspire us.");
+                showError("Please enter a sentence to inspire us.");
                 return;
             }
 
@@ -176,7 +178,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
             loading.classList.add('flex');
             
             btn.disabled = true;
-            btn.classList.add('cursor-not-allowed', 'opacity-75');
+            btn.classList.add('cursor-not-allowed', 'opacity-70');
             const originalBtnContent = btn.innerHTML;
             btn.innerHTML = '<span class="text-lg">Conjuring Magic...</span>';
 
@@ -216,7 +218,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
                 showError(err.message);
             } finally {
                 btn.disabled = false;
-                btn.classList.remove('cursor-not-allowed', 'opacity-75');
+                btn.classList.remove('cursor-not-allowed', 'opacity-70');
                 btn.innerHTML = originalBtnContent;
             }
         });
