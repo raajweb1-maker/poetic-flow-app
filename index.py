@@ -3,8 +3,8 @@ import sys
 
 try:
     import os
+    import requests
     from flask import Flask, render_template, request, jsonify
-    from openai import OpenAI
     from dotenv import load_dotenv
 
     # Load environment variables
@@ -17,17 +17,14 @@ try:
     # Configuration
     LLM_API_KEY = os.getenv("LLM_API_KEY", "")
     LLM_MODEL = os.getenv("LLM_MODEL", "qwen-3-235b-a22b-instruct-2507")
-    LLM_BASE_URL = os.getenv("LLM_BASE_URL", "")
-
-    # Initialize OpenAI Client
-    client = None
-    if LLM_API_KEY:
-        client_kwargs = {"api_key": LLM_API_KEY}
-        
-        if LLM_BASE_URL:
-            client_kwargs["base_url"] = LLM_BASE_URL
-
-        client = OpenAI(**client_kwargs)
+    
+    # If using csk key, default to chatanywhere or fallback to standard OpenAI
+    default_base_url = "https://api.chatanywhere.tech/v1" if LLM_API_KEY.startswith("csk-") else "https://api.openai.com/v1"
+    raw_base_url = os.getenv("LLM_BASE_URL", "")
+    LLM_BASE_URL = raw_base_url if raw_base_url else default_base_url
+    
+    # Clean trailing slash from base url
+    LLM_BASE_URL = LLM_BASE_URL.rstrip('/')
 
     @app.route("/")
     def index():
@@ -35,8 +32,8 @@ try:
 
     @app.route("/api/poetize", methods=["POST"])
     def poetize():
-        if not client:
-            return jsonify({"error": "LLM client is not configured properly. Missing API Key."}), 500
+        if not LLM_API_KEY:
+            return jsonify({"error": "LLM API Key is missing. Ensure Vercel Environment Variables are set."}), 500
 
         data = request.json
         sentence = data.get("sentence", "").strip()
@@ -58,19 +55,31 @@ QUOTE:
 
 User sentence: "{sentence}"
 """
+        
+        headers = {
+            "Authorization": f"Bearer {LLM_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": LLM_MODEL,
+            "messages": [
+                {"role": "system", "content": "You are a creative poet and a thoughtful philosopher."},
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.7,
+            "max_tokens": 250
+        }
 
         try:
-            response = client.chat.completions.create(
-                model=LLM_MODEL,
-                messages=[
-                    {"role": "system", "content": "You are a creative poet and a thoughtful philosopher."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=250
-            )
+            # Bypass heavy openai SDK and hit the OpenAI-compatible REST API directly
+            response = requests.post(f"{LLM_BASE_URL}/chat/completions", headers=headers, json=payload, timeout=25)
             
-            content = response.choices[0].message.content
+            if not response.ok:
+                raise Exception(f"LLM API Error {response.status_code}: {response.text}")
+                
+            resp_data = response.json()
+            content = resp_data['choices'][0]['message']['content']
             
             # Parse the structured response
             poem_lines = []
@@ -99,9 +108,16 @@ User sentence: "{sentence}"
                 elif parsing_quote:
                     quote_parts.append(line)
 
+            poem_output = "\n".join([l.strip() for l in poem_lines if l.strip()])
+            quote_output = " ".join([p.strip() for p in quote_parts if p.strip()])
+
+            # Fallback if structure parsing behaves unusually
+            if not poem_output and not quote_output:
+                poem_output = content
+
             return jsonify({
-                "poem": "\n".join([l.strip() for l in poem_lines if l.strip()]),
-                "quote": " ".join([p.strip() for p in quote_parts if p.strip()])
+                "poem": poem_output,
+                "quote": quote_output
             })
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -112,7 +128,7 @@ User sentence: "{sentence}"
 except Exception as e:
     err_msg = traceback.format_exc()
     
-    # Pure WSGI fallback for Vercel
+    # Pure WSGI fallback for Vercel diagnostic tracing
     def app(environ, start_response):
         status = '500 Internal Server Error'
         headers = [('Content-type', 'text/plain; charset=utf-8')]
