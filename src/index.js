@@ -54,7 +54,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
         .orb-2 { width: 280px; height: 280px; background: rgba(255, 255, 255, 0.1); }
         .orb-3 { width: 200px; height: 200px; background: rgba(255, 255, 255, 0.07); }
 
-        /* Smooth Instagram Link Effects */
+        /* Butter-smooth fast Instagram Link Effects */
         .karmacharya-link {
             font-size: 1.05rem;
             letter-spacing: 0.08em;
@@ -64,7 +64,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
             padding: 0.3rem 0.1rem;
             display: inline-block;
             transform: translateY(0);
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.18s ease-out;
         }
         .karmacharya-link i {
             font-style: italic;
@@ -73,8 +73,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
             background-clip: text;
             color: transparent;
             background-size: 250% auto;
-            transition: background 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        letter-spacing 0.5s ease;
+            transition: background-image 0s, letter-spacing 0.2s ease-out;
             letter-spacing: 0.08em;
         }
         .karmacharya-link:hover i {
@@ -82,14 +81,13 @@ const HTML_CONTENT = `<!DOCTYPE html>
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            background-size: 250% auto;
-            animation: shine 3s ease infinite;
-            letter-spacing: 0.15em;
+            background-size: 300% auto;
+            animation: shine 2s linear infinite;
+            letter-spacing: 0.18em;
         }
         @keyframes shine {
             0% { background-position: 0% center; }
-            50% { background-position: 100% center; }
-            100% { background-position: 0% center; }
+            100% { background-position: 200% center; }
         }
         .karmacharya-link::after {
             content: '';
@@ -97,8 +95,8 @@ const HTML_CONTENT = `<!DOCTYPE html>
             inset: 0;
             border-radius: 4px;
             opacity: 0;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-            transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 0 18px rgba(139, 92, 246, 0.5);
+            transition: opacity 0.2s ease-out;
         }
         .karmacharya-link:hover::after {
             opacity: 1;
