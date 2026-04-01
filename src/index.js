@@ -140,9 +140,9 @@ const HTML_CONTENT = `<!DOCTYPE html>
                     const text = await res.text();
                     try {
                         const errorData = JSON.parse(text);
-                        throw new Error(errorData.error || `Server responded with ${res.status}`);
+                        throw new Error(errorData.error || 'Server responded with ' + res.status);
                     } catch (e) {
-                         throw new Error(`Cloudflare Error ${res.status}: ${text || 'Empty response'}`);
+                         throw new Error('Cloudflare Error ' + res.status + ': ' + (text || 'Empty response'));
                     }
                 }
 
