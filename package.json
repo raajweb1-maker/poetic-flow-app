@@ -1,0 +1,8 @@
+{
+  "name": "poetic-flow-app",
+  "version": "1.0.0",
+  "description": "Minimalist PoeticFlow application on Cloudflare Pages",
+  "scripts": {
+    "build": "echo 'Skipping build step. Relying on native Cloudflare Pages architecture.'"
+  }
+}
