@@ -218,10 +218,11 @@ export default {
           });
         }
 
-        const modelParams = env.LLM_MODEL || "qwen-3-235b-a22b-instruct-2507";
         const isCsk = apiKey.startsWith("csk-");
-        const defaultBaseUrl = isCsk ? "https://api.chatanywhere.tech/v1" : "https://api.openai.com/v1";
+        const defaultModel = isCsk ? "qwen-3-235b-a22b-instruct-2507" : "llama3.1-8b";
+        const defaultBaseUrl = isCsk ? "https://api.chatanywhere.tech/v1" : "https://api.cerebras.ai/v1";
         
+        const modelParams = env.LLM_MODEL || defaultModel;
         let baseUrl = env.LLM_BASE_URL || defaultBaseUrl;
         baseUrl = baseUrl.replace(/\/$/, "");
 
