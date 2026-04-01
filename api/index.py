@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 # Configuration
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
@@ -68,7 +68,7 @@ User sentence: "{sentence}"
         
         # Parse the structured response
         poem_lines = []
-        quote = ""
+        quote_parts = []
         
         lines = content.strip().split('\n')
         parsing_poem = False
@@ -91,11 +91,11 @@ User sentence: "{sentence}"
             if parsing_poem:
                 poem_lines.append(line)
             elif parsing_quote:
-                quote += " " + line
+                quote_parts.append(line)
 
         return jsonify({
-            "poem": "\n".join(poem_lines),
-            "quote": quote.strip()
+            "poem": "\n".join([l.strip() for l in poem_lines if l.strip()]),
+            "quote": " ".join([p.strip() for p in quote_parts if p.strip()])
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
