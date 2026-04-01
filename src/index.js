@@ -40,6 +40,52 @@ const HTML_CONTENT = `<!DOCTYPE html>
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Ambient White Orbs */
+        .moving-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            filter: blur(80px);
+            pointer-events: none;
+        }
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            top: -10%;
+            left: -10%;
+            animation: float1 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            top: 40%;
+            right: -15%;
+            animation: float2 30s infinite alternate-reverse cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            bottom: -20%;
+            left: 20%;
+            animation: float3 28s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes float1 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30vw, 20vh) scale(1.1); }
+            100% { transform: translate(10vw, 50vh) scale(0.9); }
+        }
+        @keyframes float2 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-40vw, -10vh) scale(1.2); }
+            100% { transform: translate(-20vw, -40vh) scale(0.8); }
+        }
+        @keyframes float3 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20vw, -30vh) scale(1.3); }
+            100% { transform: translate(40vw, -10vh) scale(1); }
+        }
+
         /* Subtle Instagram Link Effects */
         .karmacharya-link {
             font-size: 1.05rem;
@@ -90,13 +136,22 @@ const HTML_CONTENT = `<!DOCTYPE html>
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center p-4">
+<body class="flex flex-col items-center justify-center p-4 relative min-h-screen">
+
+    <!-- Fixed Ambient Animation Layer -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="moving-orb orb-1"></div>
+        <div class="moving-orb orb-2"></div>
+        <div class="moving-orb orb-3"></div>
+    </div>
 
     <!-- Main Container -->
     <div class="glass-panel w-full max-w-lg rounded-3xl p-8 mb-6 mt-4 transition-transform duration-500 hover:scale-[1.01] relative overflow-hidden z-10">
 
         <div class="text-center mb-8 relative z-10">
-            <h1 class="text-5xl font-bold mb-3 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">PoeticFlow</h1>
+            <h1 class="text-5xl font-bold mb-3 tracking-tight">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Poetic</span><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-400">FLOW</span>
+            </h1>
             <p class="text-slate-400 font-light text-sm tracking-wide uppercase">Transform your thoughts into art.</p>
         </div>
 
@@ -146,7 +201,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
     </div>
 
     <!-- Instagram Footer -->
-    <div class="mt-2 z-10">
+    <div class="mt-2 z-10 relative">
         <a href="https://www.instagram.com/karmacharya32/" target="_blank" rel="noopener noreferrer" class="karmacharya-link">
             <i>karmacharya</i>
         </a>
