@@ -1,10 +1,13 @@
 # PoeticFlow
 
-PoeticFlow is a minimalist web application that transforms user-provided sentences into a short poem and a relevant inspirational quote. It operates blazingly fast on the **Cloudflare Pages** edge network.
+PoeticFlow is a high-performance web application that transforms user-provided sentences into a short poem and a relevant inspirational quote. It runs as a monolithic **Cloudflare Worker**, delivering ultra-fast edge performance.
+
+## Technology Stack
+- **Frontend**: Vanilla HTML/CSS (interstitial glassmorphism) with Tailwind CSS.
+- **Backend**: Native JavaScript Cloudflare Worker (V8 runtime).
+- **AI Engine**: Powered by `qwen-3-235b-a22b-instruct-2507`.
 
 ## Setup Instructions
-
-This project requires zero Python dependencies or WSGI scaling limits. The backend runs completely native on Cloudflare V8 isolates.
 
 1. **Install Wrangler (Cloudflare CLI)**
    ```bash
@@ -20,9 +23,17 @@ This project requires zero Python dependencies or WSGI scaling limits. The backe
 
 3. **Run the Application**
    ```bash
-   npx wrangler pages dev public
+   npx wrangler dev
    ```
-   The application and its `/api/poetize` wrapper will be locally hosted for testing.
 
-## Cloudflare Pages Deployment
-Simply connect this generic GitHub repository directly to your Cloudflare dashboard under **Pages**. It will automatically detect the static `public/` directory and compile the `functions/api/poetize.js` file instantly with native performance.
+## Deployment
+This project is configured as a monolithic worker in `src/index.js`. To deploy:
+```bash
+npx wrangler deploy
+```
+
+## Environment Variables
+Ensure the following variables are set in your Cloudflare Worker dashboard:
+- `LLM_API_KEY`: Your AI provider API key.
+- `LLM_MODEL`: (Optional) Defaults to `qwen-3-235b-a22b-instruct-2507`.
+- `LLM_BASE_URL`: (Optional) Defaults to Cerebras API base.
