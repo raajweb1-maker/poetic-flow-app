@@ -5,7 +5,7 @@ PoeticFlow is a high-performance web application that transforms user-provided s
 ## Technology Stack
 - **Frontend**: Vanilla HTML/CSS (interstitial glassmorphism) with Tailwind CSS.
 - **Backend**: Native JavaScript Cloudflare Worker (V8 runtime).
-- **AI Engine**: Powered by `qwen-3-235b-a22b-instruct-2507`.
+- **AI Engine**: Powered by `llama3.1-8b`.
 
 ## Setup Instructions
 
@@ -18,7 +18,7 @@ PoeticFlow is a high-performance web application that transforms user-provided s
    Create a `.dev.vars` file in the root directory (Cloudflare's equivalent of `.env`) with the following variables:
    ```env
    LLM_API_KEY=your_api_key
-   LLM_MODEL=qwen-3-235b-a22b-instruct-2507
+   LLM_MODEL=llama3.1-8b
    ```
 
 3. **Run the Application**
@@ -35,5 +35,5 @@ npx wrangler deploy
 ## Environment Variables
 Ensure the following variables are set in your Cloudflare Worker dashboard:
 - `LLM_API_KEY`: Your AI provider API key.
-- `LLM_MODEL`: (Optional) Defaults to `qwen-3-235b-a22b-instruct-2507`.
+- `LLM_MODEL`: (Optional) Defaults to `llama3.1-8b`.
 - `LLM_BASE_URL`: (Optional) Defaults to Cerebras API base.

@@ -321,7 +321,7 @@ export default {
           });
         }
 
-        const defaultModel = "qwen-3-235b-a22b-instruct-2507";
+        const defaultModel = "llama3.1-8b";
         const defaultBaseUrl = "https://api.cerebras.ai/v1";
         
         const modelParams = env.LLM_MODEL || defaultModel;
