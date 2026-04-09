@@ -1,5 +1,11 @@
-# Environment Variables
+# Environment Variables and Secrets
 .env
+.dev.vars
+.wrangler
+
+# Node
+node_modules/
+dist/
 
 # Python caches
 __pycache__/
