@@ -366,7 +366,14 @@ User sentence: "${sentence}"`;
         }
 
         const respData = await llmResponse.json();
+        if (respData.error) {
+          throw new Error(typeof respData.error === 'string' ? respData.error : JSON.stringify(respData.error));
+        }
+        
         const content = respData.choices?.[0]?.message?.content || "";
+        if (!content) {
+          throw new Error("Empty content received from model: " + JSON.stringify(respData));
+        }
 
         let poemLines = [];
         let quoteParts = [];
