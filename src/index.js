@@ -383,23 +383,32 @@ User sentence: "${sentence}"`;
         let parsingQuote = false;
 
         for (let line of lines) {
-          line = line.trim();
-          if (!line) continue;
-
-          if (line.startsWith("POEM:")) {
+          let tLine = line.trim();
+          if (!tLine) continue;
+          
+          let upperLine = tLine.toUpperCase();
+          
+          if (upperLine.includes("POEM:") || upperLine === "POEM" || upperLine === "**POEM**") {
             parsingPoem = true;
             parsingQuote = false;
+            
+            let extract = tLine.replace(/\*?\*?POEM:\*?\*?/i, '').replace(/\*?\*?POEM\*?\*?/i, '').trim();
+            if (extract) poemLines.push(extract);
             continue;
-          } else if (line.startsWith("QUOTE:")) {
+          } else if (upperLine.includes("QUOTE:") || upperLine === "QUOTE" || upperLine === "**QUOTE**") {
             parsingPoem = false;
             parsingQuote = true;
+            
+            let extract = tLine.replace(/\*?\*?QUOTE:\*?\*?/i, '').replace(/\*?\*?QUOTE\*?\*?/i, '').trim();
+            if (extract) quoteParts.push(extract);
             continue;
           }
 
           if (parsingPoem) {
-            poemLines.push(line);
+             // retain original formatting if desired, but we trim leading/trailing
+             poemLines.push(tLine);
           } else if (parsingQuote) {
-            quoteParts.push(line);
+             quoteParts.push(tLine);
           }
         }
 
