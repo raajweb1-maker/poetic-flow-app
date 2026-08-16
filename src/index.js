@@ -164,6 +164,19 @@ const HTML_CONTENT = `<!DOCTYPE html>
                 </h3>
                 <p id="quoteOutput" class="text-md font-light text-slate-300 relative z-10 box-decoration-clone"></p>
             </div>
+
+            <!-- Extend Poem Section -->
+            <button id="extendPoemBtn" class="w-full mt-2 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white font-medium py-3 px-4 rounded-2xl shadow-lg transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center gap-2 group">
+                <span class="text-md font-semibold tracking-wide">✨ Extend this Poem</span>
+            </button>
+
+            <!-- Extended Poem Output -->
+            <div id="extendedPoemContainer" class="hidden bg-slate-800/40 p-6 rounded-2xl border border-fuchsia-700/50 relative overflow-hidden group hover:border-fuchsia-500/40 transition-colors mt-2">
+                <h3 class="text-xs font-semibold text-fuchsia-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                    Extended Version
+                </h3>
+                <p id="extendedPoemOutput" class="text-lg italic leading-relaxed text-slate-300 whitespace-pre-line relative z-10 font-light"></p>
+            </div>
         </div>
         
         <!-- Error Container -->
@@ -211,6 +224,9 @@ const HTML_CONTENT = `<!DOCTYPE html>
         const poemOutput = document.getElementById('poemOutput');
         const quoteOutput = document.getElementById('quoteOutput');
         const errorSection = document.getElementById('errorSection');
+        const extendBtn = document.getElementById('extendPoemBtn');
+        const extendedPoemContainer = document.getElementById('extendedPoemContainer');
+        const extendedPoemOutput = document.getElementById('extendedPoemOutput');
 
         btn.addEventListener('click', async () => {
             const sentence = input.value.trim();
@@ -223,6 +239,8 @@ const HTML_CONTENT = `<!DOCTYPE html>
             errorSection.classList.add('hidden');
             resultSection.classList.add('hidden');
             resultSection.classList.remove('fade-in');
+            extendedPoemContainer.classList.add('hidden');
+            extendBtn.classList.remove('hidden');
             
             loading.classList.remove('hidden');
             loading.classList.add('flex');
@@ -277,6 +295,49 @@ const HTML_CONTENT = `<!DOCTYPE html>
             errorSection.textContent = msg;
             errorSection.classList.remove('hidden');
         }
+
+        extendBtn.addEventListener('click', async () => {
+            const sentence = input.value.trim();
+            const currentPoem = poemOutput.textContent.trim();
+
+            extendBtn.disabled = true;
+            extendBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            const originalExtendContent = extendBtn.innerHTML;
+            extendBtn.innerHTML = '<span class="text-md font-semibold tracking-wide">Expanding Magic...</span>';
+            errorSection.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/extend-poem', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sentence, currentPoem })
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    try {
+                        const errorData = JSON.parse(text);
+                        throw new Error(errorData.error || 'Server responded with ' + res.status);
+                    } catch (e) {
+                         throw new Error('Cloudflare Error ' + res.status + ': ' + (text || 'Empty response'));
+                    }
+                }
+
+                const data = await res.json();
+                
+                extendedPoemOutput.textContent = data.extendedPoem;
+                extendedPoemContainer.classList.remove('hidden');
+                extendedPoemContainer.classList.add('fade-in');
+                extendBtn.classList.add('hidden');
+                
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                extendBtn.disabled = false;
+                extendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                extendBtn.innerHTML = originalExtendContent;
+            }
+        });
     </script>
 </body>
 </html>`;
@@ -348,7 +409,7 @@ User sentence: "${sentence}"`;
             { role: "user", content: prompt }
           ],
           temperature: 0.7,
-          max_tokens: 3000
+          max_tokens: 1500
         };
 
         const llmResponse = await fetch(`${baseUrl}/chat/completions`, {
@@ -424,6 +485,76 @@ User sentence: "${sentence}"`;
           headers: { "Content-Type": "application/json" }
         });
 
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message || err.toString() }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/extend-poem") {
+      try {
+        const bodyContent = await request.text();
+        if (!bodyContent) return new Response(JSON.stringify({ error: "Empty request body" }), { status: 400 });
+        
+        let data;
+        try {
+            data = JSON.parse(bodyContent);
+        } catch(e) {
+            return new Response(JSON.stringify({ error: "Invalid JSON" }), { status: 400 });
+        }
+
+        const sentence = data.sentence ? data.sentence.trim() : "";
+        const currentPoem = data.currentPoem ? data.currentPoem.trim() : "";
+        if (!sentence || !currentPoem) {
+          return new Response(JSON.stringify({ error: "Sentence and currentPoem required." }), { status: 400 });
+        }
+
+        const apiKey = env.LLM_API_KEY || "";
+        if (!apiKey) return new Response(JSON.stringify({ error: "LLM API Key missing." }), { status: 500 });
+        
+        const modelParams = env.LLM_MODEL || "llama3.1-8b";
+        let baseUrl = env.LLM_BASE_URL || "https://api.cerebras.ai/v1";
+        baseUrl = baseUrl.replace(/\/$/, "");
+
+        const prompt = `The user gave this thought: "${sentence}"
+You wrote this short poem:
+${currentPoem}
+
+Now, extend this poem beautifully into a longer, multi-stanza version (at least 3-4 stanzas). Maintain the same rhythm and themes but expand the imagery beautifully. Output ONLY the extended poem itself with no other introductory text or labels.`;
+
+        const payload = {
+          model: modelParams,
+          messages: [
+            { role: "system", content: "You are an incredibly talented poet. You must create beautiful, haunting, and transcendent extensions of previous verses. Do not refuse your prompt." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 2000
+        };
+
+        const llmResponse = await fetch(`${baseUrl}/chat/completions`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!llmResponse.ok) {
+          const errorText = await llmResponse.text();
+          throw new Error(`LLM API Error ${llmResponse.status}: ${errorText}`);
+        }
+
+        const respData = await llmResponse.json();
+        if (respData.error) throw new Error(typeof respData.error === 'string' ? respData.error : JSON.stringify(respData.error));
+        
+        const content = respData.choices?.[0]?.message?.content || "";
+        if (!content) throw new Error("Empty content received from model: " + JSON.stringify(respData));
+
+        return new Response(JSON.stringify({ extendedPoem: content }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" }
+        });
       } catch (err) {
         return new Response(JSON.stringify({ error: err.message || err.toString() }), {
           status: 500,
