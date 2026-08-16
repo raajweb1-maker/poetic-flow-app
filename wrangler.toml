@@ -1,3 +1,6 @@
 name = "poetic-flow-v2"
 main = "src/index.js"
 compatibility_date = "2024-04-01"
+
+[vars]
+LLM_MODEL = "zai-glm-4.7"
