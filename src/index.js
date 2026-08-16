@@ -348,7 +348,7 @@ User sentence: "${sentence}"`;
             { role: "user", content: prompt }
           ],
           temperature: 0.7,
-          max_tokens: 250
+          max_tokens: 3000
         };
 
         const llmResponse = await fetch(`${baseUrl}/chat/completions`, {
